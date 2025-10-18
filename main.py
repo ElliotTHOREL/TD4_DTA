@@ -19,6 +19,6 @@ def retrieve_data(filename):
 if __name__ == "__main__":
     print("retrieving data", time.time())
     start = time.time()
-    simplex_set = retrieve_data("filtration_A.txt")
+    simplex_set = retrieve_data("filtration_B.txt")
     bars = simplex_set.compute_bars()
     print("done, time:", time.time() - start)
