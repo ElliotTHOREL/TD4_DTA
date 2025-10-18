@@ -1,4 +1,5 @@
 from structure import Simplex, Simplex_set
+import time
 
 def retrieve_simplex(line):
     info = list(map(lambda x : x.replace('\n', ''), line.split(" ")))
@@ -16,10 +17,8 @@ def retrieve_data(filename):
     return Simplex_set(simplexes)
 
 if __name__ == "__main__":
-    simplex_set = retrieve_data("filtration_B.txt")
-    print(simplex_set.simplexes)
-    print(simplex_set.matrix)
+    print("retrieving data", time.time())
+    start = time.time()
+    simplex_set = retrieve_data("filtration_A.txt")
     bars = simplex_set.compute_bars()
-
-    for bar in bars:
-        print(bar)
+    print("done, time:", time.time() - start)

@@ -1,17 +1,19 @@
-
+import time
 
 class Simplex_set:
     def __init__(self, simplexes):
+        print("sorting the simplexes", time.time())
         self.simplexes = sorted(simplexes) 
+        print("making the matrix", time.time())
         self.matrix = self.get_matrix()
 
     def compute_bars(self):
+        print("making ecehelon form", time.time())
         self.matrix.make_echelon_form()
-        print("echelon form")
-        print(self.matrix)
+        print("getting bars", time.time())
         bars = self.matrix.bars()  # list of (indexA, indexB) tuples --> (dim sigma_indexA, f(indexA), f(indexB))
-        print(bars)
 
+        print("converting bars", time.time())
         converted_bars = []
 
         for indexA, indexB in bars:
@@ -26,9 +28,11 @@ class Simplex_set:
 
     def get_matrix(self):
         vertex_to_index = {}
+        print("index dictionary", time.time())
         for index, simplex in enumerate(self.simplexes):
             vertex_to_index[tuple(simplex.under_vertices)] = index
 
+        print("filling columns", time.time())
         columns = []
         for index_simp, simplex in enumerate(self.simplexes):
             column = 0
@@ -37,7 +41,7 @@ class Simplex_set:
                 face = tuple(simplex.under_vertices[:index_vert] + simplex.under_vertices[index_vert+1:])
 
                 if face in vertex_to_index.keys():
-                    column ^= 2**vertex_to_index[face] 
+                    column ^= 1 << vertex_to_index[face]  # 1 << n shift 1 n bits -> 2**n
 
             columns.append(column)
 
