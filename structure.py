@@ -41,6 +41,7 @@ class matrix:
             raise Exception("Index out of range")
         
         return int(self.columns[coord[1]] & 2**coord[0] > 0)
+
     
     def make_echelon_form(self):
         pass
