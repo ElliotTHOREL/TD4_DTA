@@ -1,11 +1,11 @@
-from structure import simplex, simplex_set
+from structure import Simplex, Simplex_set
 
 def retrieve_simplex(line):
-    info = line.split(" ")
+    info = list(map(lambda x : x.replace('\n', ''), line.split(" ")))
     apparition_time = float( info[0] )
     dimension = int( info[1] )
-    under_vertices = info[2:]
-    return simplex(apparition_time, dimension, under_vertices)
+    under_vertices = sorted(info[2:])
+    return Simplex(apparition_time, dimension, under_vertices)
 
 
 def retrieve_data(filename):
@@ -13,4 +13,9 @@ def retrieve_data(filename):
     with open(filename, 'r') as file:
         for line in file.readlines():
             simplexes.append( retrieve_simplex(line) )
-    return simplex_set(simplexes)
+    return Simplex_set(simplexes)
+
+if __name__ == "__main__":
+    simplex_set = retrieve_data("test1.txt")
+    print(simplex_set.simplexes)
+    print(simplex_set.matrix)

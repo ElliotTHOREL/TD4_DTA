@@ -1,18 +1,48 @@
-class simplex_set:
+
+
+class Simplex_set:
     def __init__(self, simplexes):
         self.simplexes = sorted(simplexes) 
         self.matrix = self.get_matrix()
 
     def compute_bars(self):
-        pass
+        self.matrix.make_echelon_form()
+        bars = self.matrix.bars()  # list of (indexA, indexB) tuples --> (dim sigma_indexA, f(indexA), f(indexB))
+
+        converted_bars = []
+
+        for indexA, indexB in bars:
+            dimA = self.simplexes[indexA].dimension
+            fA = self.simplexes[indexA].apparition_time
+            fB = self.simplexes[indexB].apparition_time if indexB != float('inf') else float('inf')
+
+            converted_bars.append((dimA, fA, fB))
+
+        return converted_bars
+
 
     def get_matrix(self):
-        pass
+        vertex_to_index = {}
+        for index, simplex in enumerate(self.simplexes):
+            vertex_to_index[tuple(simplex.under_vertices)] = index
+
+        columns = []
+        for index_simp, simplex in enumerate(self.simplexes):
+            column = 0
+
+            for index_vert, vertex in enumerate(simplex.under_vertices):
+                face = tuple(simplex.under_vertices[:index_vert] + simplex.under_vertices[index_vert+1:])
+
+                if face in vertex_to_index.keys():
+                    column ^= 2**vertex_to_index[face] 
+
+            columns.append(column)
+
+        return Matrix(columns)
 
 
 
-
-class simplex:
+class Simplex:
     def __init__(self, apparition_time, dimension, under_vertices):
         self.apparition_time = apparition_time
         self.dimension = dimension
@@ -28,23 +58,14 @@ class simplex:
 
     def __eq__(self, other):
         return self.apparition_time == other.apparition_time and self.dimension == other.dimension and self.under_vertices == other.under_vertices
+    
+    def __repr__(self):
+        return f"f(sigma) = {self.apparition_time}, dim = {self.dimension}, sigma = ({self.under_vertices})"
 
 
-class matrix:
-    """
-        class to represent a square matrix in Z/2Z
-
-        columns is a list of ints 
-            - each int codes a column of the matrix (bits encoding)
-        size is the size of the matrix
-
-    """
-    def __init__(self, columns=[]):
-        self.columns = columns   # list of ints (dec repr of bitstring)
-        self.size = len(columns)
-
-        self.zero_columns = None #Not computed yet (make sense only after the matrix is in echelon form)
-        self.low1 = None #Not computed yet (make sense only after the matrix is in echelon form)
+class Matrix:
+    def __init__(self, columns = []):
+        self.columns = columns  # list of ints (dec repr of bitstring)
 
     def __index__(self, coord):
         # coord = (i, j)
@@ -104,7 +125,7 @@ class matrix:
 
 if __name__ == "__main__":
     columns = [int(b'0110', 2), int(b'1011', 2), int(b'1100', 2), int(b'0101', 2)]
-    matr = matrix(columns)
+    matr = Matrix(columns)
     #matr.columns = [1+4, 3, 4]
     print(matr)
     matr.make_echelon_form()
