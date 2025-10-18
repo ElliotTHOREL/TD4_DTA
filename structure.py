@@ -1,3 +1,4 @@
+from stringprep import in_table_a1
 import time
 
 class Simplex_set:
@@ -35,15 +36,16 @@ class Simplex_set:
         print("filling columns", time.time())
         columns = []
         for index_simp, simplex in enumerate(self.simplexes):
-            column = 0
+            column = []
 
             for index_vert, vertex in enumerate(simplex.under_vertices):
                 face = tuple(simplex.under_vertices[:index_vert] + simplex.under_vertices[index_vert+1:])
 
                 if face in vertex_to_index.keys():
-                    column ^= 1 << vertex_to_index[face]  # 1 << n shift 1 n bits -> 2**n
+                    column .append( vertex_to_index[face] )
+            
 
-            columns.append(column)
+            columns.append(sorted(column))
 
         return Matrix(columns)
 
@@ -75,6 +77,9 @@ class Matrix:
         self.columns = columns  # list of ints (dec repr of bitstring)
         self.size = len(columns)
 
+        self.zero_columns = None
+        self.low1 = None
+
     def __index__(self, coord):
         # coord = (i, j)
 
@@ -85,7 +90,7 @@ class Matrix:
             print(coord)
             raise Exception("Index out of range")
         
-        return int(self.columns[coord[1]] & 2**coord[0] > 0)
+        return int(coord[0] in columns[coord[1]])
 
     def __repr__(self):
         return_string = ""
@@ -95,26 +100,55 @@ class Matrix:
 
         return return_string
 
+    def add_column(self, c1, c2):
+        """
+        Method to add the column c2 to the column c1
+        """
+        new_column=[]
+        i1=0
+        i2=0
+
+        while i1<len(c1) and i2<len(c2):
+            if c1[i1] == c2[i2]:
+                i1+=1
+                i2+=1
+            elif c1[i1] < c2[i2]:
+                new_column.append(c1[i1])
+                i1+=1
+            else:
+                new_column.append(c2[i2])
+                i2+=1
+
+        return new_column + c1[i1:] + c2[i2:]
+
+
+
+    def get_lower1(self, c):
+        """
+        Method to get the lower1 of the jth column 
+        """
+        if c==[]:
+            return -1
+        return c[-1]
+
     def make_echelon_form(self):
         """Method to transform the matrix into echelon form"""
         self.zero_columns = set()   # set of column indices that are zero-columns 
                                     # i.e. actual cycles
         self.low1 ={}   # map a row to the column that has its lowest 1 in it
                         # i.e. map a cycle to its death 
-
-
         for j in range(self.size):
             column = self.columns[j]
             while True:
-                lower1 =column.bit_length()-1 # compute the row index of the lowest 1
+                lower1 = self.get_lower1(column) # compute the row index of the lowest 1
 
                 if lower1 ==-1: #zero-column
                     self.zero_columns.add(j)
-                    self.columns[j] = 0
+                    self.columns[j] = column
                     break
                 elif lower1 in self.low1:
                     # We compute the sum with the given column (i.e. xor operation)
-                    column = column ^ self.columns[self.low1[lower1]]
+                    column = self.add_column(column, self.columns[self.low1[lower1]])
                 else: 
                     self.low1[lower1] = j
                     self.columns[j] = column
