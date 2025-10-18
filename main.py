@@ -16,6 +16,10 @@ def retrieve_data(filename):
     return Simplex_set(simplexes)
 
 if __name__ == "__main__":
-    simplex_set = retrieve_data("test1.txt")
+    simplex_set = retrieve_data("filtration_B.txt")
     print(simplex_set.simplexes)
     print(simplex_set.matrix)
+    bars = simplex_set.compute_bars()
+
+    for bar in bars:
+        print(bar)

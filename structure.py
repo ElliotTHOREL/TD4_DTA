@@ -7,7 +7,10 @@ class Simplex_set:
 
     def compute_bars(self):
         self.matrix.make_echelon_form()
+        print("echelon form")
+        print(self.matrix)
         bars = self.matrix.bars()  # list of (indexA, indexB) tuples --> (dim sigma_indexA, f(indexA), f(indexB))
+        print(bars)
 
         converted_bars = []
 
@@ -66,6 +69,7 @@ class Simplex:
 class Matrix:
     def __init__(self, columns = []):
         self.columns = columns  # list of ints (dec repr of bitstring)
+        self.size = len(columns)
 
     def __index__(self, coord):
         # coord = (i, j)
@@ -129,5 +133,6 @@ if __name__ == "__main__":
     #matr.columns = [1+4, 3, 4]
     print(matr)
     matr.make_echelon_form()
+    print("jdhdhf")
     print(matr)
     print(matr.bars())
