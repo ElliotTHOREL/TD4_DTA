@@ -19,6 +19,9 @@ def retrieve_data(filename: str):
 
 def create_sphere_or_ball(d: int, is_ball: bool):
     """is_ball : False -> sphere, True -> ball"""
+    if not is_ball:
+        # the d-sphere is the (d+1)-ball without the center
+        d += 1
 
     simplexes=[]
     for i in range(1, 2**(d+1)-1 + int(is_ball)):
