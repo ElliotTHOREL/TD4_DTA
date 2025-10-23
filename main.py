@@ -17,13 +17,43 @@ def retrieve_data(filename: str):
     return Simplex_set(simplexes)
 
 
-if __name__ == "__main__":
-    c = 'B'
+def create_sphere_or_ball(d: int, is_ball: bool):
+    """is_ball : False -> sphere, True -> ball"""
 
+    simplexes=[]
+    for i in range(1, 2**(d+1)-1 + int(is_ball)):
+        vertices =[]
+        number = i
+        vertix = 0
+        while number > 0:
+            if number % 2 == 1:
+                vertices.append(str(vertix))
+            number = number // 2
+            vertix += 1
+        simplexes.append(Simplex(0, len(vertices)-1, sorted(vertices)))
+    return Simplex_set(simplexes)
+
+
+
+
+
+
+if __name__ == "__main__":
+    #from file
+    """
+    c = 'B'
     file_name = f"filtration_{c}"
     start = time.perf_counter()
+    simplex_set = retrieve_data(f"{file_name}.txt")  
+    """
+    #sphere or ball
+    d=4
+    is_ball = True
+    file_name = f"filtration_{d}-{'ball' if is_ball else 'sphere'}"
+    start = time.perf_counter()
+    simplex_set = create_sphere_or_ball(d, is_ball) 
 
-    simplex_set = retrieve_data(f"{file_name}.txt")
+    
     bars = simplex_set.compute_bars()
 
     print(f"Finished, time: {time.perf_counter() - start:.6f} seconds")
