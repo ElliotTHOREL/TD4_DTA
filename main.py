@@ -43,16 +43,19 @@ if __name__ == "__main__":
     """
     c = 'B'
     file_name = f"filtration_{c}"
+    """
+    file_name = "projective_plan"
     start = time.perf_counter()
     simplex_set = retrieve_data(f"{file_name}.txt")  
-    """
+
     #sphere or ball
+    """
     d=4
     is_ball = True
     file_name = f"filtration_{d}-{'ball' if is_ball else 'sphere'}"
     start = time.perf_counter()
     simplex_set = create_sphere_or_ball(d, is_ball) 
-
+    """
     
     bars = simplex_set.compute_bars()
 
